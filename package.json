@@ -1,0 +1,25 @@
+{
+  "name": "pro-portal-emails-lambda",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/ugarciamtz/pro-portal-emails-lambda.git",
+  "author": "Ulises Garcia <francisco.garcia@resideo.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "netlify-lambda": "^1.6.3"
+  },
+  "proxy": {
+    "/.netlify/functions": {
+      "target": "http://localhost:9000",
+      "pathRewrite": {
+        "^/\\.netlify/functions": ""
+      }
+    }
+  },
+  "scripts": {
+    "start": "netlify-lambda serve functions"
+  },
+  "dependencies": {
+    "nodemailer": "^6.4.2"
+  }
+}
