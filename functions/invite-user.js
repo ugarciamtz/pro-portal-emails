@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const nodemailer = require('nodemailer');
 
 const transport = nodemailer.createTransport({
@@ -9,7 +11,7 @@ const transport = nodemailer.createTransport({
     }
 });
 
-const message = ({ sendTo, adminFirstName, userFirstName, userLastName, companyName, country = 'US', language = 'en'}) => ({
+const message = ({ uCode, sendTo, adminFirstName, userFirstName, userLastName, companyName, country = 'US', language = 'en'}) => ({
     from: 'rezi-pro-qa@resideo.com',
     // to: '91349b97b3-e58db6@inbox.mailtrap.io',
     to: sendTo,
@@ -92,7 +94,7 @@ const message = ({ sendTo, adminFirstName, userFirstName, userLastName, companyN
                 <p style="margin: 16px 20px;">This email expires in ${ daysForExpiraion = 10 }</p>
                
                 <br />  
-                <p style="margin: 16px 20px;"><a style="background-color: #217EAE; padding: 15px 30px; color: #FFFFFF; text-decoration: none; font-weight:  bold; text-transform:  uppercase; margin-top: 20px; font-size: 14px; letter-spacing: 1px;" href="https://pro.resideo.com/sign-up?invite=${Buffer.from(`${sendTo}|${userFirstName}|${userLastName}|${companyName}|${country}|${language}`).toString('Base64')}">Create Account</a></p>
+                <p style="margin: 16px 20px;"><a style="background-color: #217EAE; padding: 15px 30px; color: #FFFFFF; text-decoration: none; font-weight:  bold; text-transform:  uppercase; margin-top: 20px; font-size: 14px; letter-spacing: 1px;" href="https://deploy-preview-1043--resideo-pro.netlify.com/sign-up?invite=${Buffer.from(`${uCode}|${sendTo}|${userFirstName}|${userLastName}|${companyName}|${country}|${language}`).toString('Base64')}">Create Account</a></p>
                 <br />
   
                 <hr style="border: 1px solid #EAEEF3; border-bottom: 0; margin: 20px 0;" />
@@ -120,18 +122,41 @@ const message = ({ sendTo, adminFirstName, userFirstName, userLastName, companyN
 
 exports.handler = (event, context, callback) => {
 
-    console.log(event.body);
+  if (event.httpMethod === 'GET') {
+
+    callback(null,{
+      statusCode: 200,
+      body: `Transactional email service`
+    })
+
+  } else if (event.httpMethod === 'OPTIONS') {
+
+    callback(null,{
+      statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'OPTIONS, GET, POST',
+        'Access-Control-Allow-Headers': 'content-type'
+      }
+    })
+
+  } else if (event.httpMethod === 'POST') {
 
     transport.sendMail(message(JSON.parse(event.body)), function(err, info) {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log(info);
-            return callback(null, {
-                statusCode: 200,
-                body: `Invite Email sent`,
-            })
-        }
+      if (err) {
+          console.log(err)
+      } else {
+        console.log(info);
+
+        callback(null, {
+          statusCode: 200,
+          headers: {
+            'content-type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+          body: `Invite Email sent`,
+        })
+      }
     });
-    
+  }
 }

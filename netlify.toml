@@ -1,2 +1,12 @@
+[[headers]]
+  # Define which paths this specific [[headers]] block will cover.
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"
+#     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+#     Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Host"
+
 [build]
+  command = "yarn build"
   functions = "functions-build"
+  publish = "functions-build"
